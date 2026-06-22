@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haier 602L 100% Convertible Side by Side Refrigerator</title>
+    <style>
+        /* Inline CSS mimicking Amazon's style */
+        body {
+            font-family: "Amazon Ember", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            color: #0f1111;
+        }
+
+        .navbar {
+            background-color: #131921;
+            padding: 10px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .navbar .search-bar {
+            flex-grow: 1;
+            display: flex;
+            height: 40px;
+        }
+
+        .navbar .search-bar input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+
+        .navbar .search-bar button {
+            background-color: #febd69;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            gap: 24px;
+        }
+
+        /* --- Left Column: Images --- */
+        .col-images {
+            flex: 0 0 500px;
+            display: flex;
+            gap: 12px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .thumbnails {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 40px;
+        }
+
+        .thumbnail {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #a6a6a6;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 2px;
+            transition: all 0.2s;
+        }
+
+        .thumbnail:hover, .thumbnail.active {
+            border-color: #e77600;
+            box-shadow: 0 0 3px #e77600;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .main-image {
+            width: 450px;
+            height: 450px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* --- Middle Column: Info --- */
+        .col-info {
+            flex: 1;
+            min-width: 400px;
+        }
+
+        .product-title {
+            font-size: 24px;
+            font-weight: 400;
+            line-height: 32px;
+            margin: 0 0 8px 0;
+        }
+
+        .brand-link {
+            color: #007185;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .brand-link:hover {
+            text-decoration: underline;
+            color: #c45500;
+        }
+
+        .rating-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #bbbfbf;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .stars {
+            color: #ffa41c;
+            font-size: 18px;
+        }
+
+        .rating-count {
+            color: #007185;
+            cursor: pointer;
+        }
+
+        .price-section {
+            margin-bottom: 16px;
+        }
+
+        .discount-badge {
+            color: #cc0c39;
+            font-size: 28px;
+            font-weight: 300;
+            margin-right: 12px;
+        }
+
+        .current-price {
+            font-size: 28px;
+            font-weight: 500;
+        }
+
+        .currency-symbol {
+            font-size: 14px;
+            vertical-align: top;
+            position: relative;
+            top: 4px;
+        }
+
+        .mrp {
+            font-size: 14px;
+            color: #565959;
+            margin-top: 4px;
+        }
+
+        .mrp span {
+            text-decoration: line-through;
+        }
+
+        .taxes-info {
+            font-size: 14px;
+            color: #565959;
+            margin-top: 4px;
+            font-weight: bold;
+        }
+
+        .offers-section {
+            border: 1px solid #d5d9d9;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+
+        .offers-title {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .offer-card {
+            border: 1px solid #d5d9d9;
+            border-radius: 4px;
+            padding: 12px;
+            background: #fff;
+            display: inline-block;
+            width: 140px;
+            vertical-align: top;
+            margin-right: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .offer-card h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            color: #0f1111;
+        }
+
+        .offer-card p {
+            margin: 0;
+            font-size: 12px;
+            color: #0f1111;
+            line-height: 1.4;
+        }
+
+        .offer-link {
+            color: #007185;
+            font-size: 12px;
+            margin-top: 8px;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .feature-icons {
+            display: flex;
+            gap: 16px;
+            border-bottom: 1px solid #bbbfbf;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .feature-icon-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            font-size: 12px;
+            color: #007185;
+            width: 70px;
+        }
+
+        .feature-icon-box img {
+            width: 35px;
+            height: 35px;
+            margin-bottom: 8px;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .specs-table td {
+            padding: 6px 0;
+            vertical-align: top;
+        }
+
+        .specs-table td:first-child {
+            font-weight: bold;
+            color: #0f1111;
+            width: 40%;
+        }
+
+        .specs-table td:last-child {
+            color: #333;
+        }
+
+        .about-item {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .bullets {
+            font-size: 14px;
+            color: #0f1111;
+            line-height: 20px;
+            padding-left: 20px;
+        }
+
+        .bullets li {
+            margin-bottom: 8px;
+        }
+
+        /* --- Right Column: Buy Box --- */
+        .col-buybox {
+            flex: 0 0 240px;
+            border: 1px solid #d5d9d9;
+            border-radius: 8px;
+            padding: 18px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .buybox-price {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .delivery-info {
+            font-size: 14px;
+            line-height: 20px;
+            margin-bottom: 16px;
+        }
+
+        .delivery-info .free-delivery {
+            color: #007185;
+        }
+
+        .delivery-info .date {
+            font-weight: bold;
+        }
+
+        .location {
+            color: #007185;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .stock-status {
+            color: #007600;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .btn-add-to-cart, .btn-buy-now {
+            width: 100%;
+            padding: 10px;
+            border-radius: 100px;
+            border: none;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(15,17,17,.15);
+        }
+
+        .btn-add-to-cart {
+            background-color: #ffd814;
+        }
+
+        .btn-add-to-cart:hover {
+            background-color: #f7ca00;
+        }
+
+        .btn-buy-now {
+            background-color: #ffa41c;
+        }
+
+        .btn-buy-now:hover {
+            background-color: #fa8900;
+        }
+
+        .secure-transaction {
+            color: #007185;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            .col-buybox {
+                position: static;
+                width: auto;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Fake Navbar -->
+    <div class="navbar">
+        <div class="logo">Amazon.in</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search Amazon.in">
+            <button>🔍</button>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <!-- Left Column: Images -->
+        <div class="col-images">
+            <div class="thumbnails">
+                <div class="thumbnail active" onmouseover="changeImage('https://m.media-amazon.com/images/I/61H4hO4N5aL._SL1500_.jpg', this)">
+                    <img src="https://m.media-amazon.com/images/I/61H4hO4N5aL._SL1500_.jpg" alt="Front View">
+                </div>
+                <div class="thumbnail" onmouseover="changeImage('https://m.media-amazon.com/images/I/71R2HNDOQ5L._SL1500_.jpg', this)">
+                    <img src="https://m.media-amazon.com/images/I/71R2HNDOQ5L._SL1500_.jpg" alt="Interior View">
+                </div>
+                <div class="thumbnail" onmouseover="changeImage('https://m.media-amazon.com/images/I/71hU7K7N-xL._SL1500_.jpg', this)">
+                    <img src="https://m.media-amazon.com/images/I/71hU7K7N-xL._SL1500_.jpg" alt="Convertible Feature">
+                </div>
+                <div class="thumbnail" onmouseover="changeImage('https://m.media-amazon.com/images/I/61U+i051gLL._SL1500_.jpg', this)">
+                    <img src="https://m.media-amazon.com/images/I/61U+i051gLL._SL1500_.jpg" alt="Magic Cooling">
+                </div>
+            </div>
+            <div class="main-image">
+                <img id="main-product-image" src="https://m.media-amazon.com/images/I/61H4hO4N5aL._SL1500_.jpg" alt="Haier Refrigerator Main View">
+            </div>
+        </div>
+
+        <!-- Middle Column: Product Info -->
+        <div class="col-info">
+            <a href="#" class="brand-link">Visit the Haier Store</a>
+            <h1 class="product-title">Haier 602L 3 Star 100% Convertible Side by Side Refrigerator with Expert Inverter Technology (HRS-682KS, Black Steel, Magic Cooling)</h1>
+            
+            <div class="rating-section">
+                <span class="stars">★★★★☆ 4.1</span>
+                <span class="rating-count">1,245 ratings</span>
+                <span>|</span>
+                <span class="brand-link">Search this page</span>
+            </div>
+
+            <div class="price-section">
+                <span class="discount-badge">-38%</span>
+                <span class="current-price"><span class="currency-symbol">₹</span>64,990</span>
+                <div class="mrp">M.R.P.: <span>₹1,05,990</span></div>
+                <div class="taxes-info">Inclusive of all taxes</div>
+                <div class="brand-link" style="margin-top:4px;">EMI starts at ₹3,151. No Cost EMI available</div>
+            </div>
+
+            <div class="offers-section">
+                <div class="offers-title">
+                    <span style="font-size:20px;">%</span> Offers
+                </div>
+                <div>
+                    <div class="offer-card">
+                        <h4>Bank Offer</h4>
+                        <p>Upto ₹2,500.00 discount on select Credit Cards</p>
+                        <span class="offer-link">3 offers ></span>
+                    </div>
+                    <div class="offer-card">
+                        <h4>Partner Offers</h4>
+                        <p>Get GST invoice and save up to 28% on business purchases.</p>
+                        <span class="offer-link">1 offer ></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature-icons">
+                <div class="feature-icon-box">
+                    <img src="https://m.media-amazon.com/images/G/31/A2I-Convert/mobile/IconFarm/icon-returns._CB484059092_.png" alt="Return Policy">
+                    <span>10 days Replacement</span>
+                </div>
+                <div class="feature-icon-box">
+                    <img src="https://m.media-amazon.com/images/G/31/A2I-Convert/mobile/IconFarm/icon-amazon-delivered._CB485933725_.png" alt="Delivery">
+                    <span>Amazon Delivered</span>
+                </div>
+                <div class="feature-icon-box">
+                    <img src="https://m.media-amazon.com/images/G/31/A2I-Convert/mobile/IconFarm/icon-warranty._CB485935626_.png" alt="Warranty">
+                    <span>1 Year Warranty</span>
+                </div>
+                <div class="feature-icon-box">
+                    <img src="https://m.media-amazon.com/images/G/31/A2I-Convert/mobile/IconFarm/icon-top-brand._CB617044271_.png" alt="Top Brand">
+                    <span>Top Brand</span>
+                </div>
+            </div>
+
+            <table class="specs-table">
+                <tr>
+                    <td>Brand</td>
+                    <td>Haier</td>
+                </tr>
+                <tr>
+                    <td>Capacity</td>
+                    <td>602 litres</td>
+                </tr>
+                <tr>
+                    <td>Configuration</td>
+                    <td>Side-by-Side</td>
+                </tr>
+                <tr>
+                    <td>Energy Star</td>
+                    <td>3 Star</td>
+                </tr>
+                <tr>
+                    <td>Color</td>
+                    <td>Black Steel</td>
+                </tr>
+                <tr>
+                    <td>Defrost System</td>
+                    <td>Frost Free</td>
+                </tr>
+            </table>
+
+            <hr style="border:0; border-top:1px solid #bbbfbf; margin: 20px 0;">
+
+            <div class="about-item">About this item</div>
+            <ul class="bullets">
+                <li>Side by Side Refrigerator with Auto-Defrost function to prevent ice build-up.</li>
+                <li>Capacity 602 Litres: Suitable for families with 5 or more members.</li>
+                <li>Manufacturer Warranty: 1 year on product, 10 years on compressor.</li>
+                <li>Expert Inverter Technology: Automatically connects to home inverter, ensures high energy efficiency, less noise, and durable performance.</li>
+                <li>100% Convertible Space: Create up to 21% more space anytime you need it. Magic Cooling enables independent temperature control.</li>
+                <li>Special Features: Jumbo Ice Maker, Super Cooling & Super Freezing mode, Deo Fresh Technology.</li>
+            </ul>
+
+        </div>
+
+        <!-- Right Column: Buy Box -->
+        <div class="col-buybox">
+            <div class="buybox-price"><span class="currency-symbol">₹</span>64,990.00</div>
+            
+            <div class="delivery-info">
+                <span class="free-delivery">FREE delivery</span> <span class="date">Tuesday, 26 June</span>. Order within 15 hrs 30 mins. Details
+            </div>
+            
+            <div class="location">
+                📍 Deliver to Senthil - Chennai 600001
+            </div>
+
+            <div class="stock-status">
+                In stock
+            </div>
+
+            <div style="font-size: 14px; margin-bottom: 16px;">
+                Ships from <span style="margin-left: 20px;">Amazon</span><br>
+                Sold by <span style="margin-left: 36px; color: #007185;">Appario Retail Private Ltd</span>
+            </div>
+
+            <button class="btn-add-to-cart">Add to Cart</button>
+            <button class="btn-buy-now">Buy Now</button>
+
+            <div class="secure-transaction">
+                🔒 Secure transaction
+            </div>
+
+            <div style="margin-top: 16px;">
+                <input type="checkbox" id="gift"> <label for="gift" style="font-size: 14px;">Add gift options</label>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Simple JS to switch main image -->
+    <script>
+        function changeImage(url, element) {
+            document.getElementById('main-product-image').src = url;
+            
+            // Update active state
+            var thumbnails = document.getElementsByClassName('thumbnail');
+            for(var i=0; i<thumbnails.length; i++) {
+                thumbnails[i].classList.remove('active');
+            }
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>

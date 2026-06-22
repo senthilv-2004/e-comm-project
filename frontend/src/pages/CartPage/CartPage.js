@@ -1,5 +1,5 @@
-// src/pages/CartPage/CartPage.js - Shopping cart page
-import React from 'react';
+// src/pages/CartPage/CartPage.js - Shopping cart page (humanized)
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import './CartPage.css';
@@ -7,6 +7,7 @@ import './CartPage.css';
 const CartPage = () => {
   const { cartItems, cartLoading, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const handleQuantityChange = async (cartId, newQty) => {
     if (newQty < 1) return;
@@ -18,15 +19,19 @@ const CartPage = () => {
   };
 
   const handleClearCart = async () => {
-    if (window.confirm('Clear all items from cart?')) {
-      await clearCart();
-    }
+    await clearCart();
+    setShowClearConfirm(false);
   };
+
+  const shippingThreshold = 50;
+  const totalNum = parseFloat(cartTotal) || 0;
+  const shippingCost = totalNum >= shippingThreshold ? 0 : 4.99;
+  const shippingProgress = Math.min((totalNum / shippingThreshold) * 100, 100);
 
   if (cartLoading) return (
     <div className="loading-container" style={{ minHeight: '60vh' }}>
       <div className="spinner" />
-      <p>Loading cart...</p>
+      <p>Grabbing your cart, one sec…</p>
     </div>
   );
 
@@ -34,8 +39,8 @@ const CartPage = () => {
     <div className="cart-page">
       <div className="page-header">
         <div className="container">
-          <h1>🛒 Your <span className="gradient-text">Cart</span></h1>
-          <p>{cartItems.length} item{cartItems.length !== 1 ? 's' : ''} in your cart</p>
+          <h1>🛒 Your <span className="gradient-text">picks so far</span></h1>
+          <p>You've got {cartItems.length} thing{cartItems.length !== 1 ? 's' : ''} in here</p>
         </div>
       </div>
 
@@ -44,10 +49,10 @@ const CartPage = () => {
           /* Empty Cart */
           <div className="empty-cart">
             <div className="empty-cart-icon">🛒</div>
-            <h2>Your cart is empty</h2>
-            <p>Looks like you haven't added anything yet. Let's fix that!</p>
+            <h2>Nothing here yet!</h2>
+            <p>Looks like you haven't found your thing yet. Let's change that!</p>
             <Link to="/products" className="btn btn-primary btn-lg">
-              🛍️ Start Shopping
+              🛍️ Go find something great
             </Link>
           </div>
         ) : (
@@ -55,10 +60,18 @@ const CartPage = () => {
             {/* ---- Cart Items ---- */}
             <div className="cart-items">
               <div className="cart-header">
-                <h3>Cart Items</h3>
-                <button className="clear-cart-btn" onClick={handleClearCart}>
-                  🗑️ Clear All
-                </button>
+                <h3>What you've picked</h3>
+                {!showClearConfirm ? (
+                  <button className="clear-cart-btn" onClick={() => setShowClearConfirm(true)}>
+                    Start fresh
+                  </button>
+                ) : (
+                  <div className="clear-confirm">
+                    <span>Remove everything?</span>
+                    <button className="btn btn-sm btn-danger" onClick={handleClearCart}>Yes, clear it</button>
+                    <button className="btn btn-sm btn-secondary" onClick={() => setShowClearConfirm(false)}>Keep it</button>
+                  </div>
+                )}
               </div>
 
               {cartItems.map(item => (
@@ -110,6 +123,7 @@ const CartPage = () => {
                     className="cart-item-remove"
                     onClick={() => handleRemove(item.cart_id)}
                     aria-label="Remove item"
+                    title="Remove this item"
                   >✕</button>
                 </div>
               ))}
@@ -117,28 +131,36 @@ const CartPage = () => {
 
             {/* ---- Order Summary ---- */}
             <div className="order-summary">
-              <h3>Order Summary</h3>
+              <h3>Here's your total</h3>
 
               <div className="summary-rows">
                 <div className="summary-row">
-                  <span>Subtotal ({cartItems.length} items)</span>
+                  <span>Your items ({cartItems.length})</span>
                   <span>${cartTotal}</span>
                 </div>
                 <div className="summary-row">
                   <span>Shipping</span>
                   <span className="free-shipping">
-                    {parseFloat(cartTotal) >= 50 ? 'FREE' : '$4.99'}
+                    {shippingCost === 0 ? 'Free! 🎁' : '$4.99'}
                   </span>
                 </div>
-                {parseFloat(cartTotal) < 50 && (
-                  <div className="free-shipping-note">
-                    Add ${(50 - parseFloat(cartTotal)).toFixed(2)} more for free shipping!
+
+                {/* Free shipping progress bar */}
+                {totalNum < shippingThreshold && (
+                  <div className="shipping-progress-wrap">
+                    <div className="shipping-progress-bar">
+                      <div className="shipping-progress-fill" style={{ width: `${shippingProgress}%` }} />
+                    </div>
+                    <div className="shipping-progress-text">
+                      You're just <strong>${(shippingThreshold - totalNum).toFixed(2)}</strong> away from free shipping 🎁
+                    </div>
                   </div>
                 )}
+
                 <div className="summary-divider" />
                 <div className="summary-row total">
-                  <span>Total</span>
-                  <span>${(parseFloat(cartTotal) + (parseFloat(cartTotal) >= 50 ? 0 : 4.99)).toFixed(2)}</span>
+                  <span>You'll pay</span>
+                  <span>${(totalNum + shippingCost).toFixed(2)}</span>
                 </div>
               </div>
 
@@ -147,17 +169,17 @@ const CartPage = () => {
                 style={{ width: '100%', marginTop: 'var(--space-lg)' }}
                 onClick={() => navigate('/checkout')}
               >
-                Proceed to Checkout →
+                Ready to make it yours →
               </button>
 
               <Link to="/products" className="continue-shopping">
-                ← Continue Shopping
+                ← Keep exploring
               </Link>
 
               {/* Trust */}
               <div className="summary-trust">
-                <span>🔒 Secure Checkout</span>
-                <span>↩️ Easy Returns</span>
+                <span>🔒 Secure checkout</span>
+                <span>↩️ Easy returns</span>
               </div>
             </div>
           </div>

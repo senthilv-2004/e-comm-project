@@ -8,7 +8,7 @@ import './CheckoutPage.css';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const { cartItems, cartTotal, clearCart, cartLoading } = useCart();
   const { user } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -26,7 +26,8 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  if (cartItems.length === 0) {
+  // Wait until cart has finished loading before checking if it's empty
+  if (!cartLoading && cartItems.length === 0) {
     navigate('/cart');
     return null;
   }

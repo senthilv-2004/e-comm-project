@@ -6,9 +6,9 @@
   padding: var(--space-3xl);
   display: flex; flex-direction: column; align-items: center; gap: var(--space-lg);
 }
-.empty-cart-icon { font-size: 5rem; opacity: 0.3; }
-.empty-cart h2 { color: var(--text-secondary); }
-.empty-cart p { color: var(--text-muted); }
+.empty-cart-icon { font-size: 5rem; opacity: 0.5; animation: wiggle 2s infinite; }
+.empty-cart h2 { color: var(--text-secondary); margin-bottom: var(--space-sm); }
+.empty-cart p { color: var(--text-muted); line-height: 1.6; }
 
 /* Layout */
 .cart-layout {
@@ -30,12 +30,24 @@
 .cart-header h3 { font-size: 1.1rem; }
 .clear-cart-btn {
   background: none; border: 1px solid var(--border);
-  border-radius: var(--radius-full); color: var(--danger);
+  border-radius: var(--radius-full); color: var(--text-muted);
   font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.875rem;
   cursor: pointer; transition: var(--transition-fast);
   font-family: var(--font-primary);
 }
-.clear-cart-btn:hover { background: rgba(255,71,87,0.1); border-color: var(--danger); }
+.clear-cart-btn:hover { background: rgba(255,71,87,0.1); border-color: var(--danger); color: var(--danger); }
+
+/* Inline Clear Confirmation */
+.clear-confirm {
+  display: flex; align-items: center; gap: var(--space-sm);
+  font-size: 0.85rem; color: var(--text-secondary);
+  animation: bounceIn 0.3s ease;
+  background: rgba(255, 165, 0, 0.05);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 165, 0, 0.2);
+}
+.clear-confirm span { font-weight: 500; }
 
 /* Cart Item Row */
 .cart-item {
@@ -86,7 +98,13 @@
 .summary-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; color: var(--text-secondary); }
 .summary-row.total { font-size: 1.1rem; font-weight: 800; color: var(--text-primary); }
 .free-shipping { color: var(--success); font-weight: 700; }
-.free-shipping-note { font-size: 0.8rem; color: var(--warning); background: rgba(255,165,0,0.1); padding: 0.5rem; border-radius: var(--radius-sm); }
+
+/* Shipping Progress */
+.shipping-progress-wrap { margin-top: var(--space-sm); background: rgba(255,107,53,0.04); padding: var(--space-md); border-radius: var(--radius-md); border: 1px solid var(--border); }
+.shipping-progress-bar { height: 6px; background: rgba(0,0,0,0.06); border-radius: var(--radius-full); overflow: hidden; margin-bottom: var(--space-sm); }
+.shipping-progress-fill { height: 100%; background: var(--gradient-success); transition: width 0.5s ease-out; }
+.shipping-progress-text { font-size: 0.8rem; color: var(--text-secondary); text-align: center; }
+.shipping-progress-text strong { color: var(--text-primary); }
 .summary-divider { height: 1px; background: var(--border); margin: var(--space-xs) 0; }
 .continue-shopping { text-align: center; font-size: 0.85rem; color: var(--text-muted); text-decoration: none; display: block; margin-top: var(--space-sm); }
 .continue-shopping:hover { color: var(--primary); }

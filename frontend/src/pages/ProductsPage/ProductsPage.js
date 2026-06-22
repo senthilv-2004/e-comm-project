@@ -1,7 +1,8 @@
 // src/pages/ProductsPage/ProductsPage.js - Product listing with filters
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { productAPI } from '../../api/axios';
+import { getAllProducts, getCategories, searchProducts, getProductsByCategory, getFeaturedProducts } from '../../data/products';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import './ProductsPage.css';
 
@@ -29,32 +30,88 @@ const ProductsPage = () => {
 
   // Fetch categories once on mount
   useEffect(() => {
-    productAPI.getCategories()
-      .then(res => setCategories(res.data.categories || []))
-      .catch(() => {});
+    // Use static categories first
+    try {
+      const staticCategories = getCategories();
+      setCategories(staticCategories);
+    } catch (err) {
+      console.error("Failed to load static categories, falling back to API");
+      // Fallback to API
+      productAPI.getCategories()
+        .then(res => setCategories(res.data.categories || []))
+        .catch(() => {});
+    }
   }, []);
 
   // Fetch products whenever filters change
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError('');
+    
     try {
-      // Build query params object (exclude empty values)
-      const params = {};
-      if (filters.search) params.search = filters.search;
-      if (filters.category !== 'all') params.category = filters.category;
-      if (filters.sort) params.sort = filters.sort;
-      if (filters.order) params.order = filters.order;
-      if (filters.featured) params.featured = filters.featured;
-      params.page = filters.page;
-      params.limit = filters.limit;
-
-      const res = await productAPI.getAll(params);
-      setProducts(res.data.products || []);
-      setTotalPages(res.data.totalPages || 1);
-      setTotalProducts(res.data.total || 0);
+      // First try to use our local static data
+      let filteredProducts = getAllProducts();
+      
+      // Apply search filter
+      if (filters.search) {
+        filteredProducts = searchProducts(filters.search);
+      }
+      
+      // Apply category filter
+      if (filters.category !== 'all') {
+        filteredProducts = filteredProducts.filter(p => 
+          p.category.toLowerCase() === filters.category.toLowerCase()
+        );
+      }
+      
+      // Apply featured filter
+      if (filters.featured === 'true') {
+        filteredProducts = filteredProducts.filter(p => p.isFeatured || p.is_featured);
+      }
+      
+      // Apply sorting
+      filteredProducts.sort((a, b) => {
+        if (filters.sort === 'price') {
+          return filters.order === 'ASC' ? a.price - b.price : b.price - a.price;
+        } else if (filters.sort === 'rating') {
+          return b.rating - a.rating; // Always descending for rating
+        } else if (filters.sort === 'reviews_count') {
+          const aCount = a.reviewCount || a.reviews_count || 0;
+          const bCount = b.reviewCount || b.reviews_count || 0;
+          return bCount - aCount;
+        }
+        // Default sort (newest) - since we don't have created_at in static data, use ID desc
+        return b.id - a.id; 
+      });
+      
+      // Apply pagination
+      const startIndex = (filters.page - 1) * filters.limit;
+      const paginatedProducts = filteredProducts.slice(startIndex, startIndex + filters.limit);
+      
+      setProducts(paginatedProducts);
+      setTotalProducts(filteredProducts.length);
+      setTotalPages(Math.ceil(filteredProducts.length / filters.limit));
+      
     } catch (err) {
-      setError('Failed to load products. Please try again.');
+      console.error("Static data failed, trying API fallback", err);
+      // Fallback to API if static data fails
+      try {
+        const params = {};
+        if (filters.search) params.search = filters.search;
+        if (filters.category !== 'all') params.category = filters.category;
+        if (filters.sort) params.sort = filters.sort;
+        if (filters.order) params.order = filters.order;
+        if (filters.featured) params.featured = filters.featured;
+        params.page = filters.page;
+        params.limit = filters.limit;
+
+        const res = await productAPI.getAll(params);
+        setProducts(res.data.products || []);
+        setTotalPages(res.data.totalPages || 1);
+        setTotalProducts(res.data.total || 0);
+      } catch (apiErr) {
+        setError('Failed to load products. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -219,12 +276,12 @@ const ProductsPage = () => {
               <div className="products-grid">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="product-skeleton">
-                    <div className="skeleton" style={{ aspectRatio: '4/3' }} />
+                    <div className="skeleton" style={{ aspectRatio: '1/1' }} />
                     <div style={{ padding: 'var(--space-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
                       <div className="skeleton" style={{ height: '16px', width: '60%' }} />
                       <div className="skeleton" style={{ height: '20px' }} />
                       <div className="skeleton" style={{ height: '14px', width: '80%' }} />
-                      <div className="skeleton" style={{ height: '36px', borderRadius: '999px' }} />
+                      <div className="skeleton" style={{ height: '36px', borderRadius: '999px', marginTop: 'auto' }} />
                     </div>
                   </div>
                 ))}

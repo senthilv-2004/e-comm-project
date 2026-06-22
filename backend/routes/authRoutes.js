@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { register, login, getProfile, updateProfile, getUsers, deleteUser } = require('../controllers/authController');
+const { googleLogin } = require('../controllers/googleAuthController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 // GET /api/auth - Get all users (Admin only)
@@ -15,6 +16,9 @@ router.post('/register', register);
 
 // POST /api/auth/login - Login with email and password
 router.post('/login', login);
+
+// POST /api/auth/google - Login with Google OAuth2
+router.post('/google', googleLogin);
 
 // GET /api/auth/profile - Get current user's profile (requires login)
 router.get('/profile', protect, getProfile);

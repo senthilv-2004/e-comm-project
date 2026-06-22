@@ -16,6 +16,7 @@ const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const { sendContactEmail } = require('./controllers/emailController');
 
 
 // Initialize Express app
@@ -59,6 +60,9 @@ app.use('/api/products', productRoutes); // Product routes
 app.use('/api/cart', cartRoutes);        // Cart routes
 app.use('/api/orders', orderRoutes);     // Order routes
 app.use('/api/admin', adminRoutes);       // Admin analytics routes
+
+// Contact email route
+app.post('/api/contact', sendContactEmail);
 
 
 // ========================

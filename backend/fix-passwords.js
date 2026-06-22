@@ -1,28 +1,20 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
-const dotenv = require('dotenv');
-dotenv.config();
 
-async function fixPasswords() {
-  const connection = await mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'ecommerce_db'
-  });
-
-  const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash('admin123', salt);
-  
-  console.log('New hash for admin123:', hash);
-
-  await connection.query('UPDATE users SET password = ? WHERE email IN (?, ?)', [hash, 'admin@shop.com', 'john@example.com']);
-  
-  console.log('Passwords for admin@shop.com and john@example.com have been reset to "admin123"');
-
-  await connection.end();
-}
-
-fixPasswords().catch(err => {
-  console.error('Error fixing passwords:', err.message);
-});
+(async () => {
+  try {
+    const c = await mysql.createConnection({host:'127.0.0.1', user:'root', password:''});
+    await c.query('USE ecommerce_db');
+    
+    // Hash 'admin123'
+    const newHash = bcrypt.hashSync('admin123', 10);
+    
+    // Update all users to have 'admin123' as password
+    const [result] = await c.query('UPDATE users SET password = ?', [newHash]);
+    
+    console.log(`Updated ${result.affectedRows} users with the correct 'admin123' hash.`);
+    await c.end();
+  } catch(e) {
+    console.log('Error:', e.message);
+  }
+})();

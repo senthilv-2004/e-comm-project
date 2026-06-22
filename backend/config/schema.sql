@@ -32,7 +32,9 @@ CREATE TABLE IF NOT EXISTS products (
   description TEXT,                                  -- Product description
   price DECIMAL(10, 2) NOT NULL,                     -- Price with 2 decimal places
   category VARCHAR(100) NOT NULL,                    -- Product category
-  image_url VARCHAR(500) DEFAULT NULL,               -- Product image URL
+  image_url VARCHAR(500) DEFAULT NULL,               -- Primary product image URL
+  images JSON,                                       -- Array of additional image URLs
+  variants JSON,                                     -- Array of variant options
   stock INT DEFAULT 0,                               -- Available stock
   rating DECIMAL(3, 2) DEFAULT 0.00,                 -- Average rating (0-5)
   reviews_count INT DEFAULT 0,                       -- Number of reviews
@@ -94,14 +96,14 @@ CREATE TABLE IF NOT EXISTS order_items (
 -- Sample Data: Admin User
 -- Password: admin123 (hashed with bcrypt)
 -- ============================================================
-INSERT INTO users (name, email, password, role) VALUES
-('Admin User', 'admin@shop.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'admin'),
-('John Doe', 'john@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'user');
+INSERT IGNORE INTO users (name, email, password, role) VALUES
+('Admin User', 'admin@shop.com', '$2a$10$9hleuVPD0pVHYudnrUTBFuBgMkX4.u6LY4oyLRz6a84gCmXP5nZ/y', 'admin'),
+('John Doe', 'john@example.com', '$2a$10$9hleuVPD0pVHYudnrUTBFuBgMkX4.u6LY4oyLRz6a84gCmXP5nZ/y', 'user');
 
 -- ============================================================
 -- Sample Data: Products
 -- ============================================================
-INSERT INTO products (name, description, price, category, image_url, stock, rating, reviews_count, is_featured) VALUES
+INSERT IGNORE INTO products (name, description, price, category, image_url, stock, rating, reviews_count, is_featured) VALUES
 
 -- Electronics
 ('iPhone 15 Pro', 'The latest iPhone with titanium design, A17 Pro chip, and advanced camera system with 48MP main camera.', 999.99, 'Electronics', 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=500', 50, 4.8, 245, TRUE),
@@ -110,26 +112,36 @@ INSERT INTO products (name, description, price, category, image_url, stock, rati
 ('Sony WH-1000XM5', 'Industry-leading noise canceling wireless headphones with 30-hour battery and multipoint connection.', 349.99, 'Electronics', 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500', 75, 4.7, 428, FALSE),
 ('iPad Pro 12.9"', 'Most advanced iPad with M2 chip, Liquid Retina XDR display, and Apple Pencil support.', 1099.99, 'Electronics', 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500', 30, 4.8, 156, FALSE),
 ('Dell XPS 15', 'Premium Windows laptop with InfinityEdge display, Intel Core i9, and NVIDIA RTX graphics.', 1799.99, 'Electronics', 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=500', 15, 4.6, 98, FALSE),
+('Nintendo Switch OLED', 'The latest Nintendo Switch with a vibrant 7-inch OLED screen, enhanced audio, and a wide adjustable stand.', 349.99, 'Electronics', 'https://images.unsplash.com/photo-1612282130134-4b95d082269a?w=500', 85, 4.8, 1250, TRUE),
+('Logitech MX Master 3S', 'Advanced wireless mouse with ultrafast scrolling, ergonomic design, and customizable buttons.', 99.99, 'Electronics', 'https://images.unsplash.com/photo-1527814050087-379381547936?w=500', 120, 4.9, 876, FALSE),
 
 -- Clothing
 ('Nike Air Max 270', 'Lifestyle shoe with the largest Air unit ever seen in a heel, providing superior cushioning.', 129.99, 'Clothing', 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500', 100, 4.5, 567, TRUE),
 ('Levi\'s 501 Original Jeans', 'The original blue jean since 1873. Straight fit with button fly and iconic look.', 89.99, 'Clothing', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=500', 150, 4.4, 892, FALSE),
 ('Adidas Ultraboost 23', 'Running shoe with responsive Boost cushioning and Primeknit upper for ultimate comfort.', 189.99, 'Clothing', 'https://images.unsplash.com/photo-1608231387042-66d1773d3028?w=500', 80, 4.6, 334, FALSE),
 ('Premium Cotton T-Shirt', 'Soft, breathable 100% organic cotton t-shirt available in multiple colors. Perfect for everyday wear.', 29.99, 'Clothing', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500', 200, 4.3, 1234, FALSE),
+('North Face Nuptse Jacket', 'Classic retro-style puffer jacket with 700-fill goose down insulation for ultimate warmth.', 279.99, 'Clothing', 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500', 40, 4.8, 412, TRUE),
+('Under Armour Compression Shirt', 'HeatGear armor compression long sleeve shirt, perfect for intense workouts.', 34.99, 'Clothing', 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=500', 180, 4.6, 290, FALSE),
 
 -- Home & Garden
 ('Instant Pot Duo 7-in-1', 'Multi-use programmable pressure cooker, slow cooker, rice cooker, steamer, sauté, yogurt maker, and warmer.', 79.99, 'Home & Garden', 'https://images.unsplash.com/photo-1585515320310-259814833e62?w=500', 60, 4.7, 2341, TRUE),
 ('Dyson V15 Detect', 'Our most powerful cordless vacuum. Laser Detect technology reveals hidden dust.', 699.99, 'Home & Garden', 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500', 25, 4.8, 456, FALSE),
 ('Philips Hue Starter Kit', 'Smart LED bulbs with millions of colors. Control with app, voice, or schedule automations.', 149.99, 'Home & Garden', 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500', 45, 4.5, 678, FALSE),
+('Nespresso VertuoPlus', 'Coffee and espresso maker with a motorized head and a large water tank, perfect for your morning brew.', 159.99, 'Home & Garden', 'https://images.unsplash.com/photo-1517686469429-8bdb88b9f907?w=500', 90, 4.7, 1024, TRUE),
+('Vitamix 5200 Blender', 'Professional-grade blender with variable speed control and a large 64-ounce container.', 399.99, 'Home & Garden', 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=500', 30, 4.9, 1530, FALSE),
 
 -- Books
 ('Atomic Habits', 'An Easy & Proven Way to Build Good Habits & Break Bad Ones by James Clear. #1 New York Times bestseller.', 14.99, 'Books', 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500', 500, 4.9, 8934, TRUE),
 ('The Psychology of Money', 'Timeless lessons on wealth, greed, and happiness by Morgan Housel. Essential reading for investors.', 12.99, 'Books', 'https://images.unsplash.com/photo-1592496431122-2349e0fbc666?w=500', 400, 4.8, 5621, FALSE),
 ('Clean Code', 'A Handbook of Agile Software Craftsmanship by Robert C. Martin. Must-read for every developer.', 39.99, 'Books', 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=500', 200, 4.7, 3456, FALSE),
+('Dune', 'Epic science fiction masterpiece by Frank Herbert. A sweeping tale of politics, religion, and survival.', 18.99, 'Books', 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=500', 350, 4.8, 6420, TRUE),
+('Sapiens: A Brief History of Humankind', 'Explore the entire history of the human race, from the very first humans to the modern era, by Yuval Noah Harari.', 22.99, 'Books', 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=500', 280, 4.7, 4821, FALSE),
 
 -- Sports
 ('Yoga Mat Premium', 'Non-slip, eco-friendly natural rubber yoga mat. Extra thick 6mm for superior joint protection.', 59.99, 'Sports', 'https://images.unsplash.com/photo-1601925228037-0b8e81ce7822?w=500', 120, 4.6, 789, FALSE),
-('Resistance Bands Set', 'Set of 5 resistance bands with varying levels. Perfect for home workouts, stretching, and physical therapy.', 24.99, 'Sports', 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500', 250, 4.4, 1567, FALSE);
+('Resistance Bands Set', 'Set of 5 resistance bands with varying levels. Perfect for home workouts, stretching, and physical therapy.', 24.99, 'Sports', 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500', 250, 4.4, 1567, FALSE),
+('Bowflex SelectTech 552 Dumbbells', 'Adjustable dumbbells replacing 15 sets of weights. Perfect for strength training at home.', 429.99, 'Sports', 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=500', 20, 4.8, 3120, TRUE),
+('Spalding NBA Official Basketball', 'Official size and weight NBA game basketball, made with full-grain leather for excellent grip.', 69.99, 'Sports', 'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=500', 150, 4.7, 850, FALSE);
 
 -- ============================================================
 -- Verification Queries (optional, run to verify)

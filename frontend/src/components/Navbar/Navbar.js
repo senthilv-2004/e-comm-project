@@ -84,7 +84,7 @@ const Navbar = () => {
                 <input
                   type="text"
                   className="search-input"
-                  placeholder="Search products..."
+                  placeholder="Find something you'll love…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   aria-label="Search products"
@@ -96,6 +96,11 @@ const Navbar = () => {
 
           {/* ---- Right Actions ---- */}
           <div className="navbar-actions">
+
+            {/* Contact Link */}
+            <Link to="/contact" className="contact-link" style={{ marginRight: '1rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: '500' }}>
+              Contact
+            </Link>
 
             {/* Cart Icon */}
             <Link to="/cart" className="cart-btn" aria-label="Shopping cart">
@@ -129,12 +134,12 @@ const Navbar = () => {
                     </div>
 
                     <Link to="/my-orders" className="dropdown-item" role="menuitem">
-                      📦 My Orders
+                      📦 My orders
                     </Link>
 
                     {isAdmin && (
                       <Link to="/admin" className="dropdown-item" role="menuitem">
-                        ⚙️ Admin Dashboard
+                        🏪 Manage my store
                       </Link>
                     )}
 
@@ -145,7 +150,7 @@ const Navbar = () => {
                       onClick={handleLogout}
                       role="menuitem"
                     >
-                      🚪 Logout
+                      👋 Sign out
                     </button>
                   </div>
                 )}
@@ -183,7 +188,7 @@ const Navbar = () => {
               <input
                 type="text"
                 className="search-input"
-                placeholder="Search products..."
+                placeholder="Find something you'll love…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -196,14 +201,15 @@ const Navbar = () => {
         <div className="mobile-nav-links">
           <Link to="/" className="mobile-nav-link">🏠 Home</Link>
           <Link to="/products" className="mobile-nav-link">🛍️ Products</Link>
+          <Link to="/contact" className="mobile-nav-link">✉️ Contact Us</Link>
           <Link to="/cart" className="mobile-nav-link">
             🛒 Cart {cartCount > 0 && `(${cartCount})`}
           </Link>
           {isAuthenticated && (
-            <Link to="/my-orders" className="mobile-nav-link">📦 My Orders</Link>
+            <Link to="/my-orders" className="mobile-nav-link">📦 My orders</Link>
           )}
           {isAdmin && (
-            <Link to="/admin" className="mobile-nav-link">⚙️ Admin</Link>
+            <Link to="/admin" className="mobile-nav-link">🏪 My store</Link>
           )}
         </div>
 
@@ -211,12 +217,12 @@ const Navbar = () => {
         {!isAuthenticated ? (
           <div className="mobile-auth-btns">
             <Link to="/login" className="btn btn-secondary">Login</Link>
-            <Link to="/register" className="btn btn-primary">Create Account</Link>
+            <Link to="/register" className="btn btn-primary">Join us</Link>
           </div>
         ) : (
           <div className="mobile-auth-btns">
             <button className="btn btn-danger" onClick={handleLogout}>
-              🚪 Logout
+              👋 Sign out
             </button>
           </div>
         )}

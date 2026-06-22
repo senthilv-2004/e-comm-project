@@ -20,7 +20,7 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.order-card-header:hover { background: rgba(108,99,255,0.03); }
+.order-card-header:hover { background: rgba(255,107,53,0.03); }
 
 .order-id, .order-date, .order-total { display: flex; flex-direction: column; gap: 2px; }
 .order-id .label, .order-date .label, .order-total .label {

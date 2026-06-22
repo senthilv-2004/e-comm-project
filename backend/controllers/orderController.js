@@ -7,7 +7,8 @@ const db = require('../config/db');
  */
 const placeOrder = async (req, res) => {
   const connection = await db.getConnection();
-  
+  let transactionStarted = false;
+
   try {
     const userId = req.user.id;
     const { shipping_address, payment_method = 'cod', notes } = req.body;
@@ -54,6 +55,7 @@ const placeOrder = async (req, res) => {
 
     // Start database transaction for data consistency
     await connection.beginTransaction();
+    transactionStarted = true;
 
     // Create the order record
     const [orderResult] = await connection.execute(
@@ -107,8 +109,10 @@ const placeOrder = async (req, res) => {
     });
 
   } catch (error) {
-    // Rollback all changes if any error occurred
-    await connection.rollback();
+    // Only rollback if a transaction was actually started
+    if (transactionStarted) {
+      await connection.rollback();
+    }
     console.error('Place order error:', error);
     res.status(500).json({
       success: false,

@@ -19,6 +19,7 @@ import MyOrdersPage from './pages/MyOrdersPage/MyOrdersPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import RegisterPage from './pages/RegisterPage/RegisterPage';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import ContactPage from './pages/ContactPage/ContactPage';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import AdminRoute from './components/ProtectedRoute/AdminRoute';
 
@@ -43,6 +44,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/products" element={<ProductsPage />} />
                 <Route path="/products/:id" element={<ProductDetailPage />} />
+                <Route path="/contact" element={<ContactPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { productAPI } from '../../api/axios';
+import { getFeaturedProducts, getCategories } from '../../data/products';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import './HomePage.css';
 
@@ -14,12 +15,22 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          productAPI.getAll({ featured: 'true', limit: 4 }),
-          productAPI.getCategories(),
-        ]);
-        setFeaturedProducts(productsRes.data.products || []);
-        setCategories(categoriesRes.data.categories || []);
+        // Try static data first
+        const staticFeatured = getFeaturedProducts().slice(0, 4);
+        const staticCategories = getCategories();
+        
+        if (staticFeatured.length > 0) {
+          setFeaturedProducts(staticFeatured);
+          setCategories(staticCategories);
+        } else {
+          // Fallback to API
+          const [productsRes, categoriesRes] = await Promise.all([
+            productAPI.getAll({ featured: 'true', limit: 4 }),
+            productAPI.getCategories(),
+          ]);
+          setFeaturedProducts(productsRes.data.products || []);
+          setCategories(categoriesRes.data.categories || []);
+        }
       } catch (error) {
         console.error('Failed to fetch home data:', error);
       } finally {
@@ -40,6 +51,13 @@ const HomePage = () => {
     'Toys': '🧸',
     'Beauty': '💄',
     'Automotive': '🚗',
+    'Smartphones': '📱',
+    'Wearables': '⌚',
+    'Audio': '🎧',
+    'Appliances': '🧊',
+    'Laptops': '💻',
+    'Tablets': '📝',
+    'TVs': '📺'
   };
 
   // Features data
@@ -107,7 +125,7 @@ const HomePage = () => {
                 {featuredProducts.slice(0, 4).map(product => (
                   <Link to={`/products/${product.id}`} key={product.id} className="preview-item">
                     <img
-                      src={product.image_url || 'https://via.placeholder.com/200'}
+                      src={(product.images && product.images[0]) || product.image_url || 'https://via.placeholder.com/200'}
                       alt={product.name}
                     />
                     <div className="preview-info">

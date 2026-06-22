@@ -18,6 +18,26 @@ const ProductCard = ({ product }) => {
   const [added, setAdded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  // Normalize data between static JSON and old API format
+  const id = product.id;
+  const name = product.name;
+  const category = product.category;
+  const price = parseFloat(product.price);
+  const originalPrice = product.originalPrice ? parseFloat(product.originalPrice) : null;
+  const discount = product.discount || 0;
+  const stock = product.stock !== undefined ? product.stock : 10;
+  const rating = parseFloat(product.rating) || 0;
+  const reviewCount = product.reviewCount || product.reviews_count || 0;
+  const isFeatured = product.isFeatured || product.is_featured;
+  
+  // Get main image
+  let imageUrl = 'https://via.placeholder.com/300x300/1a1a2e/6c63ff?text=No+Image';
+  if (product.images && product.images.length > 0) {
+    imageUrl = product.images[0];
+  } else if (product.image_url) {
+    imageUrl = product.image_url;
+  }
+
   // Handle Add to Cart button click
   const handleAddToCart = async (e) => {
     e.preventDefault(); // Don't navigate to product page
@@ -30,10 +50,10 @@ const ProductCard = ({ product }) => {
     }
 
     // Check if product is out of stock
-    if (product.stock === 0) return;
+    if (stock === 0) return;
 
     setAdding(true);
-    const result = await addToCart(product.id, 1);
+    const result = await addToCart(id, 1);
     setAdding(false);
 
     if (result.success) {
@@ -44,13 +64,13 @@ const ProductCard = ({ product }) => {
   };
 
   // Generate star rating display
-  const renderStars = (rating) => {
-    const fullStars = Math.floor(rating);
-    const hasHalf = rating % 1 >= 0.5;
+  const renderStars = (ratingValue) => {
+    const fullStars = Math.floor(ratingValue);
+    const hasHalf = ratingValue % 1 >= 0.5;
     const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0);
 
     return (
-      <span className="stars" aria-label={`Rating: ${rating} out of 5`}>
+      <span className="stars" aria-label={`Rating: ${ratingValue} out of 5`}>
         {'★'.repeat(fullStars)}
         {hasHalf ? '½' : ''}
         {'☆'.repeat(emptyStars)}
@@ -60,21 +80,28 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="product-card">
-      {/* Featured Badge */}
-      {product.is_featured && (
-        <div className="product-badge featured">⚡ Featured</div>
-      )}
+      <div className="product-badges">
+        {/* Featured Badge */}
+        {isFeatured && (
+          <div className="product-badge featured">⚡ Featured</div>
+        )}
+        
+        {/* Discount Badge */}
+        {discount > 0 && (
+          <div className="product-badge discount">{discount}% OFF</div>
+        )}
 
-      {/* Out of Stock Overlay */}
-      {product.stock === 0 && (
-        <div className="product-badge out-of-stock">Out of Stock</div>
-      )}
+        {/* Out of Stock Overlay */}
+        {stock === 0 && (
+          <div className="product-badge out-of-stock">Out of Stock</div>
+        )}
+      </div>
 
       {/* Product Image */}
-      <Link to={`/products/${product.id}`} className="product-image-wrapper">
+      <Link to={`/products/${id}`} className="product-image-wrapper">
         <img
-          src={imageError ? 'https://via.placeholder.com/300x300/1a1a2e/6c63ff?text=No+Image' : product.image_url}
-          alt={product.name}
+          src={imageError ? 'https://via.placeholder.com/300x300/1a1a2e/6c63ff?text=No+Image' : imageUrl}
+          alt={name}
           className="product-image"
           onError={() => setImageError(true)}
           loading="lazy"
@@ -86,27 +113,40 @@ const ProductCard = ({ product }) => {
 
       {/* Product Info */}
       <div className="product-info">
-        {/* Category */}
-        <span className="product-category">{product.category}</span>
+        {/* Category & Colors */}
+        <div className="product-meta">
+          <span className="product-category">{category}</span>
+          {product.colorVariants && product.colorVariants.length > 0 && (
+            <div className="product-colors">
+              {product.colorVariants.slice(0, 4).map((c, i) => (
+                <span key={i} className="color-dot" style={{ backgroundColor: c.hex }} title={c.name}></span>
+              ))}
+              {product.colorVariants.length > 4 && <span className="color-more">+{product.colorVariants.length - 4}</span>}
+            </div>
+          )}
+        </div>
 
         {/* Product Name */}
         <h3 className="product-name">
-          <Link to={`/products/${product.id}`}>{product.name}</Link>
+          <Link to={`/products/${id}`}>{name}</Link>
         </h3>
 
         {/* Rating & Reviews */}
         <div className="product-rating">
-          {renderStars(parseFloat(product.rating) || 0)}
-          <span className="rating-value">{parseFloat(product.rating || 0).toFixed(1)}</span>
-          <span className="reviews-count">({product.reviews_count || 0})</span>
+          {renderStars(rating)}
+          <span className="rating-value">{rating.toFixed(1)}</span>
+          <span className="reviews-count">({reviewCount})</span>
         </div>
 
         {/* Price & Stock */}
         <div className="product-footer">
-          <div className="product-price">
-            <span className="price">${parseFloat(product.price).toFixed(2)}</span>
-            {product.stock > 0 && product.stock <= 10 && (
-              <span className="low-stock">Only {product.stock} left!</span>
+          <div className="product-price-container">
+            <span className="price">${price.toFixed(2)}</span>
+            {originalPrice && (
+              <span className="original-price">${originalPrice.toFixed(2)}</span>
+            )}
+            {stock > 0 && stock <= 10 && (
+              <span className="low-stock">Only {stock} left!</span>
             )}
           </div>
 
@@ -114,17 +154,17 @@ const ProductCard = ({ product }) => {
           <button
             className={`add-to-cart-btn ${added ? 'added' : ''} ${adding ? 'loading' : ''}`}
             onClick={handleAddToCart}
-            disabled={product.stock === 0 || adding}
-            aria-label={`Add ${product.name} to cart`}
+            disabled={stock === 0 || adding}
+            aria-label={`Add ${name} to cart`}
           >
             {adding ? (
               <span className="spinner spinner-sm" />
             ) : added ? (
               '✓ Added!'
-            ) : product.stock === 0 ? (
+            ) : stock === 0 ? (
               'Out of Stock'
             ) : (
-              '🛒 Add to Cart'
+              '🛒 Add'
             )}
           </button>
         </div>

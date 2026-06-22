@@ -12,22 +12,22 @@ const MyOrdersPage = () => {
   useEffect(() => {
     orderAPI.getMyOrders()
       .then(res => setOrders(res.data.orders || []))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
   const statusConfig = {
-    pending:    { color: 'var(--warning)',  icon: '⏳', label: 'Pending' },
-    processing: { color: 'var(--info)',     icon: '⚙️', label: 'Processing' },
-    shipped:    { color: 'var(--primary)',  icon: '🚚', label: 'Shipped' },
-    delivered:  { color: 'var(--success)',  icon: '✅', label: 'Delivered' },
-    cancelled:  { color: 'var(--danger)',   icon: '❌', label: 'Cancelled' },
+    pending: { color: 'var(--warning)', icon: '⏳', label: 'Pending' },
+    processing: { color: 'var(--info)', icon: '⚙️', label: 'Processing' },
+    shipped: { color: 'var(--primary)', icon: '🚚', label: 'Shipped' },
+    delivered: { color: 'var(--success)', icon: '✅', label: 'Delivered' },
+    cancelled: { color: 'var(--danger)', icon: '❌', label: 'Cancelled' },
   };
 
   if (loading) return (
     <div className="loading-container" style={{ minHeight: '60vh' }}>
       <div className="spinner" />
-      <p>Loading your orders...</p>
+      <p>Looking up your orders…</p>
     </div>
   );
 
@@ -35,8 +35,8 @@ const MyOrdersPage = () => {
     <div className="orders-page">
       <div className="page-header">
         <div className="container">
-          <h1>📦 My <span className="gradient-text">Orders</span></h1>
-          <p>{orders.length} order{orders.length !== 1 ? 's' : ''} placed</p>
+          <h1>📦 Your <span className="gradient-text">order history</span></h1>
+          <p>You've placed {orders.length} order{orders.length !== 1 ? 's' : ''} with us</p>
         </div>
       </div>
 
@@ -45,9 +45,9 @@ const MyOrdersPage = () => {
           <div className="empty-state">
             <div style={{ fontSize: '4rem' }}>📦</div>
             <h3>No orders yet</h3>
-            <p>Start shopping and your orders will appear here.</p>
+            <p>Once you find something you love, your orders will live here.</p>
             <Link to="/products" className="btn btn-primary" style={{ marginTop: 'var(--space-lg)' }}>
-              🛍️ Shop Now
+              🛍️ Let's go find something
             </Link>
           </div>
         ) : (
@@ -68,7 +68,7 @@ const MyOrdersPage = () => {
                       <span className="value">{new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                     </div>
                     <div className="order-total">
-                      <span className="label">Total</span>
+                      <span className="label">Titotal</span>
                       <span className="value price price-sm">${parseFloat(order.total_amount).toFixed(2)}</span>
                     </div>
                     <div className="order-status">
@@ -107,7 +107,7 @@ const MyOrdersPage = () => {
                       </div>
                       <div className="order-card-footer">
                         <Link to={`/order-success/${order.id}`} className="btn btn-secondary btn-sm">
-                          View Full Details
+                          See full details
                         </Link>
                       </div>
                     </div>

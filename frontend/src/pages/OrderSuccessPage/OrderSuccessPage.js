@@ -35,9 +35,9 @@ const OrderSuccessPage = () => {
             </div>
           </div>
 
-          <h1 className="success-title">Order Placed! 🎉</h1>
+          <h1 className="success-title">It's happening! 🎉</h1>
           <p className="success-subtitle">
-            Thank you for shopping with ShopEase! Your order has been confirmed.
+            Thanks for choosing ShopEase! We've got your order and we're on it.
           </p>
 
           {loading ? (
@@ -74,7 +74,7 @@ const OrderSuccessPage = () => {
               {/* Order Items */}
               {order.items && order.items.length > 0 && (
                 <div className="order-items-list">
-                  <h4>🛍️ Items Ordered</h4>
+                <h4>🛍️ What's coming your way</h4>
                   {order.items.map(item => (
                     <div key={item.id} className="success-order-item">
                       <img src={item.image_url || 'https://via.placeholder.com/60'} alt={item.name} />
@@ -94,13 +94,13 @@ const OrderSuccessPage = () => {
 
           {/* Steps Timeline */}
           <div className="order-steps">
-            <div className="step active"><div className="step-dot" /><span>Order Confirmed</span></div>
+            <div className="step active"><div className="step-dot" /><span>We got it</span></div>
             <div className="step-line" />
-            <div className="step"><div className="step-dot" /><span>Processing</span></div>
+            <div className="step"><div className="step-dot" /><span>Packing it up</span></div>
             <div className="step-line" />
-            <div className="step"><div className="step-dot" /><span>Shipped</span></div>
+            <div className="step"><div className="step-dot" /><span>On the way</span></div>
             <div className="step-line" />
-            <div className="step"><div className="step-dot" /><span>Delivered</span></div>
+            <div className="step"><div className="step-dot" /><span>At your door</span></div>
           </div>
 
           <div className="success-actions">

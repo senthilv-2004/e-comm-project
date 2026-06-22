@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { authAPI } from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 import './LoginPage.css';
 
 const LoginPage = () => {
@@ -26,7 +27,7 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      setError('Please enter both email and password.');
+      setError("Looks like you missed a spot — we need both your email and password.");
       return;
     }
     setLoading(true);
@@ -35,7 +36,20 @@ const LoginPage = () => {
       login(res.data.token, res.data.user);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || "Hmm, we couldn't log you in. Want to try that again?");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      const res = await authAPI.googleLogin(credentialResponse.credential);
+      login(res.data.token, res.data.user);
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(err.response?.data?.message || "Google sign-in failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -58,10 +72,10 @@ const LoginPage = () => {
             <p>Your premium shopping destination</p>
           </div>
           <div className="auth-features">
-            <div className="auth-feature"><span>✨</span> Thousands of products</div>
-            <div className="auth-feature"><span>🔒</span> Secure & encrypted</div>
-            <div className="auth-feature"><span>🚀</span> Fast delivery</div>
-            <div className="auth-feature"><span>↩️</span> 30-day easy returns</div>
+            <div className="auth-feature"><span>✨</span> Things you'll actually love</div>
+            <div className="auth-feature"><span>🔒</span> Safe, secure, and private</div>
+            <div className="auth-feature"><span>🚀</span> Fast delivery to your door</div>
+            <div className="auth-feature"><span>↩️</span> No-stress 30-day returns</div>
           </div>
         </div>
 
@@ -69,8 +83,8 @@ const LoginPage = () => {
         <div className="auth-right">
           <div className="auth-card">
             <div className="auth-card-header">
-              <h2>Welcome back 👋</h2>
-              <p>Sign in to continue shopping</p>
+              <h2>Good to see you again 👋</h2>
+              <p>Let's get you signed in.</p>
             </div>
 
             {/* Demo Buttons */}
@@ -83,7 +97,17 @@ const LoginPage = () => {
               </button>
             </div>
 
-            <div className="auth-divider"><span>or sign in manually</span></div>
+            <div className="google-login-container" style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  setError('Google Login Failed');
+                }}
+                useOneTap
+              />
+            </div>
+
+            <div className="auth-divider"><span>or sign in the usual way</span></div>
 
             {error && <div className="alert alert-error">⚠️ {error}</div>}
 
@@ -120,7 +144,7 @@ const LoginPage = () => {
               </div>
 
               <button type="submit" className="btn btn-primary btn-lg auth-submit" disabled={loading}>
-                {loading ? <><span className="spinner spinner-sm" /> Signing in...</> : '🚀 Sign In'}
+                {loading ? <><span className="spinner spinner-sm" /> Getting things ready…</> : '✨ Let me in'}
               </button>
             </form>
 

@@ -86,13 +86,19 @@ const getProducts = async (req, res) => {
     const [countResult] = await db.execute(countQuery, countParams);
     const total = countResult[0].total;
 
+    const parsedProducts = products.map(p => {
+      if (typeof p.images === 'string') p.images = JSON.parse(p.images);
+      if (typeof p.variants === 'string') p.variants = JSON.parse(p.variants);
+      return p;
+    });
+
     res.status(200).json({
       success: true,
-      count: products.length,
+      count: parsedProducts.length,
       total,
       totalPages: Math.ceil(total / limitNum),
       currentPage: pageNum,
-      products
+      products: parsedProducts
     });
 
   } catch (error) {
@@ -124,9 +130,32 @@ const getProduct = async (req, res) => {
       });
     }
 
+    const product = products[0];
+
+    // Fetch related images
+    const [images] = await db.execute(
+      'SELECT id, image_url, sort_order, alt_text FROM product_images WHERE product_id = ? ORDER BY sort_order ASC',
+      [id]
+    );
+    product.images = images;
+
+    // Fetch related variants
+    const [variants] = await db.execute(
+      'SELECT id, variant_type, variant_value, price_modifier, stock FROM product_variants WHERE product_id = ?',
+      [id]
+    );
+    product.variants = variants;
+
+    // Fetch related products (same category, excluding current product)
+    const [related] = await db.execute(
+      'SELECT id, name, price, image_url, rating, reviews_count FROM products WHERE category = ? AND id != ? LIMIT 8',
+      [product.category, id]
+    );
+    product.related_products = related;
+
     res.status(200).json({
       success: true,
-      product: products[0]
+      product
     });
 
   } catch (error) {
@@ -144,7 +173,7 @@ const getProduct = async (req, res) => {
  */
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, image_url, stock, is_featured } = req.body;
+    const { name, description, price, category, image_url, stock, is_featured, images, variants } = req.body;
 
     // Validate required fields
     if (!name || !price || !category) {
@@ -182,6 +211,32 @@ const createProduct = async (req, res) => {
       [result.insertId]
     );
 
+    const productId = result.insertId;
+
+    // Insert images if provided
+    if (images && Array.isArray(images) && images.length > 0) {
+      const imgValues = images.map((img, index) => [productId, img, index]);
+      await db.query(
+        'INSERT INTO product_images (product_id, image_url, sort_order) VALUES ?',
+        [imgValues]
+      );
+    }
+
+    // Insert variants if provided
+    if (variants && Array.isArray(variants) && variants.length > 0) {
+      const varValues = variants.map(v => [
+        productId, 
+        v.variant_type, 
+        v.variant_value, 
+        v.price_modifier || 0, 
+        v.stock || 0
+      ]);
+      await db.query(
+        'INSERT INTO product_variants (product_id, variant_type, variant_value, price_modifier, stock) VALUES ?',
+        [varValues]
+      );
+    }
+
     res.status(201).json({
       success: true,
       message: 'Product created successfully',
@@ -204,7 +259,7 @@ const createProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, category, image_url, stock, is_featured } = req.body;
+    const { name, description, price, category, image_url, stock, is_featured, images, variants } = req.body;
 
     // Check if product exists
     const [existing] = await db.execute('SELECT id FROM products WHERE id = ?', [id]);
@@ -237,6 +292,36 @@ const updateProduct = async (req, res) => {
         id
       ]
     );
+
+    // Update images if provided
+    if (images && Array.isArray(images)) {
+      await db.execute('DELETE FROM product_images WHERE product_id = ?', [id]);
+      if (images.length > 0) {
+        const imgValues = images.map((img, index) => [id, img, index]);
+        await db.query(
+          'INSERT INTO product_images (product_id, image_url, sort_order) VALUES ?',
+          [imgValues]
+        );
+      }
+    }
+
+    // Update variants if provided
+    if (variants && Array.isArray(variants)) {
+      await db.execute('DELETE FROM product_variants WHERE product_id = ?', [id]);
+      if (variants.length > 0) {
+        const varValues = variants.map(v => [
+          id, 
+          v.variant_type, 
+          v.variant_value, 
+          v.price_modifier || 0, 
+          v.stock || 0
+        ]);
+        await db.query(
+          'INSERT INTO product_variants (product_id, variant_type, variant_value, price_modifier, stock) VALUES ?',
+          [varValues]
+        );
+      }
+    }
 
     // Fetch updated product
     const [updatedProduct] = await db.execute('SELECT * FROM products WHERE id = ?', [id]);
